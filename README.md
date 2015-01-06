@@ -33,4 +33,9 @@ Design ideas so far
 
 ![Horizontal Detail](design/HorizontalDetail.jpg)
 
+Remarks
+-------
+
+That app would be useful to me :)
+
 
