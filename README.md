@@ -14,6 +14,15 @@ There is a list of islands with a small amount of data (distance, relative wind)
 
 One can open a map to get a full featured map of the island and come back to the app with the back button (whatever map app).
 
+Design ideas so far
+-------------------
+
+![List of isldands](design/MainList.jpg)
+
+![Vertical Detail of an island](design/VerticalDetail.jpg)
+
+![Horizontal Detail](design/HorizontalDetail.jpg)
+
 Needs some thinking
 -------------------
 
