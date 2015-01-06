@@ -1,18 +1,23 @@
 archipelago
 ===========
 
-(Only a few ideas for now)
+Purpose: *Help a sailor find a good place to spend the night while sailing in the Stockholm Archipelago*.
 
-This project helps sailors find a good place or harbour while sailing in the Stockholm Archipelago. The Stockholm archipelago is rather large (20 to 30 000 islands, depending how you count) and there are numerous places where one can anchor his boat for the night, bays or harbours. Example: https://goo.gl/maps/oQjo6
+The Stockholm archipelago is rather large (20 to 30 000 islands, depending how you count) and there are numerous places where one can anchor his boat for the night, bays or harbours. <a href="https://goo.gl/maps/oz3uS" target="_blank">An example</a> 
 
-The very simple project lists (some of) the islands and provides information to get there:
-* The distance (km) and direction
-* The relative direction fo the wind
-* The force of the wind in the next 2 hours
+The project helps by providing a list if isldands (or harbors) together with:
+* The distance and direction to the place
+* The direction fo the wind (at this place)
+* The wind direction and force during he night (very important if you need to spend the night in a bay)
+* A map of the island
+* It opens a map app when clicking on the map
 
-There is a list of islands with a small amount of data (distance, relative wind). Clicking on one gives a more detailed view of the island.
-
-One can open a map to get a full featured map of the island and come back to the app with the back button (whatever map app).
+Ideas for later
+---------------
+* Embedd a map engine inside the app (Google maps?) instead of a simple picture of the island
+* See the whole area between the current position and the island.
+* Link to http://kartor.eniro.se/ which has a map with sea depth (*very* useful for sailors)
+* More weather information for the night?
 
 Design ideas so far
 -------------------
@@ -23,8 +28,4 @@ Design ideas so far
 
 ![Horizontal Detail](design/HorizontalDetail.jpg)
 
-Needs some thinking
--------------------
-
-* Open specifically http://kartor.eniro.se/ for better maps with sea depth?
 
