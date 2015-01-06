@@ -7,8 +7,8 @@ The Stockholm archipelago is rather large (20 to 30 000 islands, depending how y
 
 The project helps by providing a list if islands / harbors together with:
 * The distance and direction to the place
-* The direction fo the wind (at this place)
-* The wind direction and force during he night (very important if you need to spend the night in a bay)
+* The direction of the wind (at this place)
+* The wind direction and force during the night (very important if you need to spend the night in a bay and the bay is "opened")
 * A map of the island
 * It opens a map app when clicking on the map
 
