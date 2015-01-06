@@ -14,10 +14,11 @@ The project helps by providing a list if isldands (or harbors) together with:
 
 Ideas for later
 ---------------
-* Embedd a map engine inside the app (Google maps?) instead of a simple picture of the island
-* See the whole area between the current position and the island.
-* Link to http://kartor.eniro.se/ which has a map with sea depth (*very* useful for sailors)
+* Embedd a map engine inside the app (Google maps?) instead of a simple picture of the island. It would require some google developer key.
+* See the whole area between the current position and the island. That would require to embed a map fragment.
+* Link to http://kartor.eniro.se/ which has a map with sea depth (*very* useful for sailors). But right now, eniro does not offer an API or usable urls.
 * More weather information for the night?
+* Include a phone number to harbor and call it on a click (if it exists) so the sailor can check there is some available place. Get the phone number from some useful site?
 
 Design ideas so far
 -------------------
