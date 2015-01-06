@@ -23,6 +23,7 @@ Ideas for later
  * Provide islands only if it's reachable before some predefined time (8pm, for instance)
  * Take the route into account (hey, the boat can't go through an island, right?) 
  * Take the depth of the sea into account (really hard...)
+ * Estimate the time of arrival with wind speed and direction, and with the boat characteristics
 
 Design ideas so far
 -------------------
