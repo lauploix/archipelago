@@ -5,7 +5,7 @@ Purpose: *Help a sailor find a good place to spend the night while sailing in th
 
 The Stockholm archipelago is rather large (20 to 30 000 islands, depending how you count) and there are numerous places where one can anchor his boat for the night, bays or harbors. Here is a <a href="https://goo.gl/maps/oz3uS" target="_blank">bay</a>. 
 
-The project helps by providing a list if isldands (or harbors) together with:
+The project helps by providing a list if islands / harbors together with:
 * The distance and direction to the place
 * The direction fo the wind (at this place)
 * The wind direction and force during he night (very important if you need to spend the night in a bay)
@@ -19,6 +19,10 @@ Ideas for later
 * Link to http://kartor.eniro.se/ which has a map with sea depth (*very* useful for sailors). But right now, eniro does not offer an API or usable urls.
 * More weather information for the night?
 * Include a phone number to harbor and call it on a click (if it exists) so the sailor can check there is some available place. Get the phone number from some useful site?
+* More difficult things: 
+ * Provide islands only if it's reachable before some predefined time (8pm, for instance)
+ * Take the route into account (hey, the boat can't go through an island, right?) 
+ * Take the depth of the sea into account (really hard...)
 
 Design ideas so far
 -------------------
