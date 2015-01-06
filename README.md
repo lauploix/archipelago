@@ -19,6 +19,7 @@ Ideas for later
 * Link to http://kartor.eniro.se/ which has a map with sea depth (*very* useful for sailors). But right now, eniro does not offer an API or usable urls.
 * More weather information for the night?
 * Include a phone number to harbor and call it on a click (if it exists) so the sailor can check there is some available place. Get the phone number from some useful site?
+* Order the list given the distance or estimated time of arrival
 * More difficult things: 
  * Provide islands only if it's reachable before some predefined time (8pm, for instance)
  * Take the route into account (hey, the boat can't go through an island, right?) 
