@@ -3,7 +3,7 @@ archipelago
 
 Purpose: *Help a sailor find a good place to spend the night while sailing in the Stockholm Archipelago*.
 
-The Stockholm archipelago is rather large (20 to 30 000 islands, depending how you count) and there are numerous places where one can anchor his boat for the night, bays or harbours. <a href="https://goo.gl/maps/oz3uS" target="_blank">An example</a> 
+The Stockholm archipelago is rather large (20 to 30 000 islands, depending how you count) and there are numerous places where one can anchor his boat for the night, bays or harbors. <a href="https://goo.gl/maps/oz3uS" target="_blank">An example</a> 
 
 The project helps by providing a list if isldands (or harbors) together with:
 * The distance and direction to the place
