@@ -4,8 +4,7 @@
 /build
 BuildConfig.java
 R.java
-gradle-wrapper.jar
-androidTest.iml
-main.iml
+*.jar
 *.iml
 Manifest.java
+*.swp
