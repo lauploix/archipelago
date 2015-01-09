@@ -1,5 +1,11 @@
-.gradle
+/.gradle
 /local.properties
-/.idea
 .DS_Store
 /build
+BuildConfig.java
+R.java
+gradle-wrapper.jar
+androidTest.iml
+main.iml
+*.iml
+Manifest.java
