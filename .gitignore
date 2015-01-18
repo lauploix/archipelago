@@ -1,9 +1,6 @@
-/.gradle
 /local.properties
 .DS_Store
 /build
-BuildConfig.java
-R.java
 *.jar
 *.iml
 Manifest.java
