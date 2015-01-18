@@ -25,9 +25,9 @@ public class DummyContent {
 
     static {
         // Add 3 sample items.
-        addItem(new DummyItem("1", "Item 1"));
-        addItem(new DummyItem("2", "Item 2"));
-        addItem(new DummyItem("3", "Item 3"));
+        addItem(new DummyItem("1", "Island 1"));
+        addItem(new DummyItem("2", "Island 2"));
+        addItem(new DummyItem("3", "Island 3"));
     }
 
     private static void addItem(DummyItem item) {
@@ -40,16 +40,16 @@ public class DummyContent {
      */
     public static class DummyItem {
         public String id;
-        public String content;
+        public String islandName;
 
-        public DummyItem(String id, String content) {
+        public DummyItem(String id, String islandName) {
             this.id = id;
-            this.content = content;
+            this.islandName = islandName;
         }
 
         @Override
         public String toString() {
-            return content;
+            return islandName;
         }
     }
 }

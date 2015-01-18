@@ -12,7 +12,7 @@ import se.synerna.archipelago.dummy.DummyContent;
 
 /**
  * A fragment representing a single Island detail screen.
- * This fragment is either contained in a {@link IslandListActivity}
+ * This fragment is either contained in a {@link MainActivity}
  * in two-pane mode (on tablets) or a {@link IslandDetailActivity}
  * on handsets.
  */
@@ -54,7 +54,7 @@ public class IslandDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.island_detail)).setText(mItem.content);
+            ((TextView) rootView.findViewById(R.id.island_detail)).setText(mItem.islandName);
         }
 
         return rootView;

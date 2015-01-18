@@ -13,7 +13,7 @@ import android.support.v4.app.FragmentActivity;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  * <p/>
- * The activity makes heavy use of fragments. The list of items is a
+ * The activity makes use of fragments. The list of items is a
  * {@link IslandListFragment} and the item details
  * (if present) is a {@link IslandDetailFragment}.
  * <p/>
@@ -21,7 +21,7 @@ import android.support.v4.app.FragmentActivity;
  * {@link IslandListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class IslandListActivity extends FragmentActivity
+public class MainActivity extends FragmentActivity
         implements IslandListFragment.Callbacks {
 
     /**
