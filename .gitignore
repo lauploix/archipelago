@@ -5,3 +5,5 @@
 *.iml
 Manifest.java
 *.swp
+app/src/main/gen
+.gradle/2.2.1/taskArtifacts
