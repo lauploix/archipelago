@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/list_item_island_name"
+            android:id="@+id/island_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -32,7 +32,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/list_item_island_distance"
+                android:id="@+id/island_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -42,7 +42,7 @@
                 android:textAppearance="?android:textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/list_item_island_wind_speed"
+                android:id="@+id/island_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -60,7 +60,7 @@
 
         <!-- Replace with my view -->
         <ImageView
-            android:id="@+id/list_item_winds_drawing"
+            android:id="@+id/winds_drawing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

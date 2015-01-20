@@ -54,7 +54,9 @@ public class IslandDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.island_detail)).setText(mItem.islandName);
+            ((TextView) rootView.findViewById(R.id.island_name)).setText(mItem.islandName);
+            ((TextView) rootView.findViewById(R.id.island_wind_speed)).setText(mItem.localWindSpeedStr);
+            ((TextView) rootView.findViewById(R.id.island_distance)).setText(mItem.distanceStr);
 
             // @todo add other items here
         }
