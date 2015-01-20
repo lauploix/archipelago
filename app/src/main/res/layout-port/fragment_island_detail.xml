@@ -1,0 +1,18 @@
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/island_detail"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:textIsSelectable="true"
+        tools:context=".IslandDetailFragment" />
+
+</LinearLayout>

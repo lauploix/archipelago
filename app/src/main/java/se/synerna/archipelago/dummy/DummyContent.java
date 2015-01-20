@@ -41,15 +41,20 @@ public class DummyContent {
     public static class DummyItem {
         public String id;
         public String islandName;
+        public String localWindSpeedStr;
+        public String distanceStr;
 
         public DummyItem(String id, String islandName) {
             this.id = id;
             this.islandName = islandName;
+            this.localWindSpeedStr= "5 m/s";
+            this.distanceStr= "10 Miles";
         }
 
         @Override
         public String toString() {
             return islandName;
         }
+
     }
 }

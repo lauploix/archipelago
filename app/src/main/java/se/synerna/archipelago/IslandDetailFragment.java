@@ -55,6 +55,8 @@ public class IslandDetailFragment extends Fragment {
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.island_detail)).setText(mItem.islandName);
+
+            // @todo add other items here
         }
 
         return rootView;
