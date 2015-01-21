@@ -36,14 +36,12 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_island_list);
 
         if (findViewById(R.id.island_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
+            // If we use a tablet
             mTwoPane = true;
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
+            // That would trigger some coloring (for instance)
             ((IslandListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.island_list))
                     .setActivateOnItemClick(true);

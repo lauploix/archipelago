@@ -11,7 +11,12 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         super(Application.class);
     }
 
-    public void testInstantiateContent(){
+    public void testParseRightNowForecast(){
+        String s = Sandhamn.answer;
+
 
     }
+
+
+
 }
