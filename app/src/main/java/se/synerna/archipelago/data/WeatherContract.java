@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Defines table and column names for the weather database.
+ * Defines table and column names for the archipelago database.
  */
 public class WeatherContract {
 

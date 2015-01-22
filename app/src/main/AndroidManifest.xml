@@ -27,4 +27,28 @@
 
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- SyncAdapter's dummy authentication service -->
+    <service android:name=".sync.ArchipelagoAuthenticatorService">
+        <intent-filter>
+            <action android:name="android.accounts.AccountAuthenticator" />
+        </intent-filter>
+        <meta-data
+            android:name="android.accounts.AccountAuthenticator"
+            android:resource="@xml/authenticator" />
+    </service>
+
+    <!-- The SyncAdapter service -->
+    <service
+        android:name=".sync.ArchipelagoSyncService"
+        android:exported="true"
+        >
+        <intent-filter>
+            <action android:name="android.content.SyncAdapter" />
+        </intent-filter>
+        <meta-data
+            android:name="android.content.SyncAdapter"
+            android:resource="@xml/syncadapter" />
+    </service>
+
 </manifest>

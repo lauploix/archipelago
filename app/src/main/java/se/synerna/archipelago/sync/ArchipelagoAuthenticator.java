@@ -11,9 +11,9 @@ import android.os.Bundle;
  * From
  * http://developer.android.com/training/sync-adapters/creating-authenticator.html
  */
-public class SunshineAuthenticator extends AbstractAccountAuthenticator {
+public class ArchipelagoAuthenticator extends AbstractAccountAuthenticator {
 
-    public SunshineAuthenticator(Context context) {
+    public ArchipelagoAuthenticator(Context context) {
         super(context);
     }
 

@@ -5,22 +5,22 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class SunshineSyncService extends Service {
+public class ArchipelagoSyncService extends Service {
     private static final Object sSyncAdapterLock = new Object();
-    private static SunshineSyncAdapter sSunshineSyncAdapter = null;
+    private static ArchipelagoSyncAdapter sArchipelagoSyncAdapter = null;
 
     @Override
     public void onCreate() {
         Log.d("SunshineSyncService", "onCreate - SunshineSyncService");
         synchronized (sSyncAdapterLock) {
-            if (sSunshineSyncAdapter == null) {
-                sSunshineSyncAdapter = new SunshineSyncAdapter(getApplicationContext(), true);
+            if (sArchipelagoSyncAdapter == null) {
+                sArchipelagoSyncAdapter = new ArchipelagoSyncAdapter(getApplicationContext(), true);
             }
         }
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return sSunshineSyncAdapter.getSyncAdapterBinder();
+        return sArchipelagoSyncAdapter.getSyncAdapterBinder();
     }
 }
