@@ -49,7 +49,6 @@ public class MainActivity extends FragmentActivity
                     .setActivateOnItemClick(true);
         }
 
-        // This crashes now
         ArchipelagoSyncAdapter.initializeSyncAdapter(this);
 
         // TODO: If exposing deep links into your app, handle intents here.

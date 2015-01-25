@@ -29,11 +29,11 @@ import java.util.Date;
 
 public class Utility {
     public static String getPreferredLocation(Context context) {
-        return "Samdhamn";
+        return "Sandhamn";
         /*
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_location_key),
-                context.getString(R.string.pref_location_default));
+                R.string.pref_location_default));
         */
     }
 
