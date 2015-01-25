@@ -12,7 +12,6 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,7 +25,16 @@
         </activity>
 
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+
+    <provider
+        android:name=".data.WeatherProvider"
+        android:authorities="@string/content_authority"
+        android:exported="false"
+        android:syncable="true" />
 
     <!-- SyncAdapter's dummy authentication service -->
     <service android:name=".sync.ArchipelagoAuthenticatorService">
@@ -41,8 +49,7 @@
     <!-- The SyncAdapter service -->
     <service
         android:name=".sync.ArchipelagoSyncService"
-        android:exported="true"
-        >
+        android:exported="true">
         <intent-filter>
             <action android:name="android.content.SyncAdapter" />
         </intent-filter>

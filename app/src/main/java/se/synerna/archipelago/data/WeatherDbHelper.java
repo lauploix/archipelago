@@ -28,9 +28,9 @@ import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
-    public static final String DATABASE_NAME = "weather.db";
+    public static final String DATABASE_NAME = "archipelago.db";
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -86,12 +86,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
-        // Note that this only fires if you change the version number for your database.
-        // It does NOT depend on the version number for your application.
-        // If you want to update the schema without wiping data, commenting out the next 2 lines
-        // should be your top priority before modifying this method.
+        // A cache database
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + LocationEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);

@@ -46,16 +46,16 @@ import java.util.Date;
 import java.util.Vector;
 
 public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
-    public final String LOG_TAG = ArchipelagoSyncAdapter.class.getSimpleName();
+    public static final String LOG_TAG = ArchipelagoSyncAdapter.class.getSimpleName();
     // Interval at which to sync with the weather, in milliseconds.
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 180;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
 
 
-    private static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
+    private static final String[] NOTIFY_WEATHER_PROJECTION = new String[]{
             WeatherEntry.COLUMN_WEATHER_ID,
             WeatherEntry.COLUMN_MAX_TEMP,
             WeatherEntry.COLUMN_MIN_TEMP,
@@ -204,7 +204,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
 
-            for(int i = 0; i < weatherArray.length(); i++) {
+            for (int i = 0; i < weatherArray.length(); i++) {
                 // These are the values that will be collected.
 
                 long dateTime;
@@ -260,7 +260,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 cVVector.add(weatherValues);
             }
-            if ( cVVector.size() > 0 ) {
+            if (cVVector.size() > 0) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
@@ -270,7 +270,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
                 String yesterdayDate = WeatherContract.getDbDateString(cal.getTime());
                 getContext().getContentResolver().delete(WeatherEntry.CONTENT_URI,
                         WeatherEntry.COLUMN_DATETEXT + " <= ?",
-                        new String[] {yesterdayDate});
+                        new String[]{yesterdayDate});
 
                 //notifyWeather();
             }
@@ -370,9 +370,9 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
      * Helper method to handle insertion of a new location in the weather database.
      *
      * @param locationSetting The location string used to request updates from the server.
-     * @param cityName A human-readable city name, e.g "Mountain View"
-     * @param lat the latitude of the city
-     * @param lon the longitude of the city
+     * @param cityName        A human-readable city name, e.g "Mountain View"
+     * @param lat             the latitude of the city
+     * @param lon             the longitude of the city
      * @return the row ID of the added location.
      */
     private long addLocation(String locationSetting, String cityName, double lat, double lon) {
@@ -439,6 +439,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Helper method to have the sync adapter sync immediately
+     *
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
@@ -466,8 +467,13 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         Account newAccount = new Account(
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
+        Log.v(LOG_TAG, "R.string.app_name: " + context.getString(R.string.app_name) + ", "
+                + R.string.app_name);
+        Log.v(LOG_TAG, "R.string.sync_account_type: " + context.getString(R.string.sync_account_type)
+                + ", " + R.string.sync_account_type);
+
         // If the password doesn't exist, the account doesn't exist
-        if ( null == accountManager.getPassword(newAccount) ) {
+        if (null == accountManager.getPassword(newAccount)) {
 
         /*
          * Add the account and account type, no password or user data

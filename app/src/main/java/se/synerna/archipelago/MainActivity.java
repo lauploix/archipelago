@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import se.synerna.archipelago.sync.ArchipelagoSyncAdapter;
+
 
 /**
  * An activity representing a list of Islands. This activity
@@ -47,6 +49,9 @@ public class MainActivity extends FragmentActivity
                     .setActivateOnItemClick(true);
         }
 
+        // This crashes now
+        ArchipelagoSyncAdapter.initializeSyncAdapter(this);
+
         // TODO: If exposing deep links into your app, handle intents here.
     }
 
@@ -75,5 +80,6 @@ public class MainActivity extends FragmentActivity
             detailIntent.putExtra(IslandDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
         }
+
     }
 }

@@ -23,6 +23,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import se.synerna.archipelago.data.WeatherContract.LocationEntry;
+import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -41,30 +43,31 @@ public class WeatherProvider extends ContentProvider {
     static{
         sWeatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
         sWeatherByLocationSettingQueryBuilder.setTables(
-                WeatherContract.WeatherEntry.TABLE_NAME + " INNER JOIN " +
-                        WeatherContract.LocationEntry.TABLE_NAME +
-                        " ON " + WeatherContract.WeatherEntry.TABLE_NAME +
-                        "." + WeatherContract.WeatherEntry.COLUMN_LOC_KEY +
-                        " = " + WeatherContract.LocationEntry.TABLE_NAME +
-                        "." + WeatherContract.LocationEntry._ID);
+                WeatherEntry.TABLE_NAME + " INNER JOIN " +
+                        LocationEntry.TABLE_NAME +
+                        " ON " + WeatherEntry.TABLE_NAME +
+                        "." + WeatherEntry.COLUMN_LOC_KEY +
+                        " = " + LocationEntry.TABLE_NAME +
+                        "." + LocationEntry._ID);
     }
 
     private static final String sLocationSettingSelection =
-            WeatherContract.LocationEntry.TABLE_NAME+
-                    "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
+            LocationEntry.TABLE_NAME+
+                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
+
     private static final String sLocationSettingWithStartDateSelection =
-            WeatherContract.LocationEntry.TABLE_NAME+
-                    "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
-                    WeatherContract.WeatherEntry.COLUMN_DATETEXT + " >= ? ";
+            LocationEntry.TABLE_NAME+
+                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
+                    WeatherEntry.COLUMN_DATETEXT + " >= ? ";
 
     private static final String sLocationSettingAndDaySelection =
-            WeatherContract.LocationEntry.TABLE_NAME +
-                    "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
-                    WeatherContract.WeatherEntry.COLUMN_DATETEXT + " = ? ";
+            LocationEntry.TABLE_NAME +
+                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
+                    WeatherEntry.COLUMN_DATETEXT + " = ? ";
 
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
-        String startDate = WeatherContract.WeatherEntry.getStartDateFromUri(uri);
+        String locationSetting = WeatherEntry.getLocationSettingFromUri(uri);
+        String startDate = WeatherEntry.getStartDateFromUri(uri);
 
         String[] selectionArgs;
         String selection;
@@ -89,8 +92,8 @@ public class WeatherProvider extends ContentProvider {
 
     private Cursor getWeatherByLocationSettingAndDate(
             Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
-        String date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+        String locationSetting = WeatherEntry.getLocationSettingFromUri(uri);
+        String date = WeatherEntry.getDateFromUri(uri);
 
         return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
@@ -150,7 +153,7 @@ public class WeatherProvider extends ContentProvider {
             // "weather"
             case WEATHER: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        WeatherEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -163,9 +166,9 @@ public class WeatherProvider extends ContentProvider {
             // "location/*"
             case LOCATION_ID: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        WeatherContract.LocationEntry.TABLE_NAME,
+                        LocationEntry.TABLE_NAME,
                         projection,
-                        WeatherContract.LocationEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        LocationEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         null,
                         null,
                         null,
@@ -176,7 +179,7 @@ public class WeatherProvider extends ContentProvider {
             // "location"
             case LOCATION: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        WeatherContract.LocationEntry.TABLE_NAME,
+                        LocationEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -202,15 +205,15 @@ public class WeatherProvider extends ContentProvider {
 
         switch (match) {
             case WEATHER_WITH_LOCATION_AND_DATE:
-                return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
+                return WeatherEntry.CONTENT_ITEM_TYPE;
             case WEATHER_WITH_LOCATION:
-                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+                return WeatherEntry.CONTENT_TYPE;
             case WEATHER:
-                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+                return WeatherEntry.CONTENT_TYPE;
             case LOCATION:
-                return WeatherContract.LocationEntry.CONTENT_TYPE;
+                return LocationEntry.CONTENT_TYPE;
             case LOCATION_ID:
-                return WeatherContract.LocationEntry.CONTENT_ITEM_TYPE;
+                return LocationEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -224,17 +227,17 @@ public class WeatherProvider extends ContentProvider {
 
         switch (match) {
             case WEATHER: {
-                long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, values);
+                long _id = db.insert(WeatherEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = WeatherContract.WeatherEntry.buildWeatherUri(_id);
+                    returnUri = WeatherEntry.buildWeatherUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
             case LOCATION: {
-                long _id = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values);
+                long _id = db.insert(LocationEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+                    returnUri = LocationEntry.buildLocationUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -254,11 +257,11 @@ public class WeatherProvider extends ContentProvider {
         switch (match) {
             case WEATHER:
                 rowsDeleted = db.delete(
-                        WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
+                        WeatherEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case LOCATION:
                 rowsDeleted = db.delete(
-                        WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                        LocationEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -279,11 +282,11 @@ public class WeatherProvider extends ContentProvider {
 
         switch (match) {
             case WEATHER:
-                rowsUpdated = db.update(WeatherContract.WeatherEntry.TABLE_NAME, values, selection,
+                rowsUpdated = db.update(WeatherEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             case LOCATION:
-                rowsUpdated = db.update(WeatherContract.LocationEntry.TABLE_NAME, values, selection,
+                rowsUpdated = db.update(LocationEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:
@@ -305,7 +308,7 @@ public class WeatherProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
+                        long _id = db.insert(WeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
                         }

@@ -3,9 +3,8 @@
 
     <string name="app_name">Archipelago</string>
     <string name="title_island_detail">Island Detail</string>
-    <string name="content_authority">se.synerna.archipelago</string>
 
-    // Just the fake account type
     <string name="sync_account_type">archipelago.synerna.se</string>
+    <string name="content_authority">se.synerna.archipelago</string>
 
 </resources>
