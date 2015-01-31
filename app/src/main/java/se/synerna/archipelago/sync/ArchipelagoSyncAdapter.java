@@ -49,8 +49,6 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = ArchipelagoSyncAdapter.class.getSimpleName();
     public static final int SYNC_INTERVAL = 10; //60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
-    // private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    // private static final int WEATHER_NOTIFICATION_ID = 3004;
 
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[]{
             WeatherEntry.COLUMN_WEATHER_ID,
@@ -69,9 +67,101 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
     }
 
+    public void syncIslandsLocations(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        // Will contain the raw JSON response as a string.
+        String islandsStr = null;
+        try {
+            // Construct the URL for the OpenWeatherMap query
+            // http://openweathermap.org/API#forecast
+            final String ISLANDS_URL =
+                    "https://raw.githubusercontent.com/lauploix/archipelago/master/data/islands.json";
+            URL url = new URL(ISLANDS_URL);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            // Read the input stream into a String
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            if (inputStream == null) {
+                // There should be a file there...
+                // for now we return and we do nothing
+                return;
+            }
+
+            // Does it need to be that complicated ?
+            // Well, anyway... it does not hurt
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+
+            if (buffer.length() == 0) {
+                // Stream was empty.  No point in parsing.
+                return;
+            }
+            islandsStr = buffer.toString();
+
+            Log.v(LOG_TAG, islandsStr); // Found this json string
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+            // If the code didn't successfully get the weather data, there's no point in attempting
+            // to parse it.
+            return;
+        } finally {
+            if (urlConnection != null) {
+                // Good practice
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    // Log but go on
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+        // Here the json containing the islands is available.
+        // The same would have costs approx 5 loc in python... just me saying.
+        try {
+            final String ISLANDS = "islands";
+            final String NAME = "name";
+            final String LONG = "long";
+            final String LAT = "lat";
+
+            JSONObject islandJson = new JSONObject(islandsStr);
+            JSONArray islandsArray = islandJson.getJSONArray(ISLANDS);
+
+            for (int i = 0; i < islandsArray.length(); i++) {
+                JSONObject island = islandsArray.getJSONObject(i);
+                String name = island.getString(NAME);
+                double longi = island.getDouble(LONG);
+                double lati = island.getDouble(LAT);
+                Log.v(LOG_TAG, "Found island "+ name + " at " + longi + " / " + lati);
+            }
+
+        } catch (JSONException e) {
+            // Problem parsing the Json that is returned
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
+
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    public void onPerformSync(Account account, Bundle extras, String
+            authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "Starting sync");
+
+        syncIslandsLocations(account, extras, authority, provider, syncResult);
+
+        // Now doing a sync to get the islands
+        // For now we do that often but we should not, for now
+
         // Getting the zipcode to send to the API
         String locationQuery = Utility.getPreferredLocation(getContext());
 
@@ -162,7 +252,6 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Location information
         final String OWM_CITY = "city";
-        final String OWM_CITY_NAME = "name";
         final String OWM_COORD = "coord";
 
         // Location coordinate
@@ -192,13 +281,12 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
-            String cityName = cityJson.getString(OWM_CITY_NAME);
 
             JSONObject cityCoord = cityJson.getJSONObject(OWM_COORD);
             double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
             double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
 
-            long locationId = addLocation(locationQuery, cityName, cityLatitude, cityLongitude);
+            long locationId = addLocation(locationQuery, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
@@ -289,15 +377,15 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
      * Helper method to handle insertion of a new location in the weather database.
      *
      * @param locationSetting The location string used to request updates from the server.
-     * @param cityName        A human-readable city name, e.g "Mountain View"
      * @param lat             the latitude of the city
      * @param lon             the longitude of the city
      * @return the row ID of the added location.
      */
-    private long addLocation(String locationSetting, String cityName, double lat, double lon) {
+
+    private long addLocation(String locationSetting, double lat, double lon) {
         long locationId;
 
-        Log.v(LOG_TAG, "inserting " + cityName + ", with coord: " + lat + ", " + lon);
+        Log.v(LOG_TAG, "inserting " + locationSetting + ", with coord: " + lat + ", " + lon);
 
         // First, check if the location with this city name exists in the db
         Cursor locationCursor = getContext().getContentResolver().query(
@@ -317,7 +405,6 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
             // Then add the data, along with the corresponding name of the data type,
             // so the content provider knows what kind of value is being inserted.
-            locationValues.put(LocationEntry.COLUMN_CITY_NAME, cityName);
             locationValues.put(LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
             locationValues.put(LocationEntry.COLUMN_COORD_LAT, lat);
             locationValues.put(LocationEntry.COLUMN_COORD_LONG, lon);

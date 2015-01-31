@@ -20,6 +20,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.util.Log;
 
 import se.synerna.archipelago.data.WeatherContract.LocationEntry;
 import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
@@ -30,9 +31,11 @@ import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 10;
 
     public static final String DATABASE_NAME = "archipelago.db";
+    public static final String LOG_TAG = WeatherDbHelper.class.getSimpleName();
+
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,7 +48,6 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
                 LocationEntry._ID + " INTEGER PRIMARY KEY," +
                 LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
-                LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL, " +
                 "UNIQUE (" + LocationEntry.COLUMN_LOCATION_SETTING +") ON CONFLICT IGNORE"+
@@ -88,20 +90,10 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        Log.v(LOG_TAG, "Upgrading database schema from "+ oldVersion + " to " + newVersion);
         // A cache database
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + LocationEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
-
-        final String SQL_INSERT = "INSERT INTO " + LocationEntry.TABLE_NAME +
-                "( "+
-                LocationEntry.COLUMN_CITY_NAME + ", " +
-                LocationEntry.COLUMN_COORD_LAT + ", " +
-                LocationEntry.COLUMN_COORD_LONG +
-                "  ) VALUES ( " +
-                "'Nynäshamn', "+
-                ");";
-        // Finally, insert location data into the database.
-        sqLiteDatabase.execSQL(SQL_INSERT);
 
         onCreate(sqLiteDatabase);
     }
