@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import se.synerna.archipelago.dummy.DummyContent;
+import se.synerna.archipelago.dummy.Island;
 
 /**
  * A fragment representing a single Island detail screen.
@@ -26,7 +26,7 @@ public class IslandDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
+    private Island.DummyItem mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -43,7 +43,7 @@ public class IslandDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = Island.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
         }
     }
 

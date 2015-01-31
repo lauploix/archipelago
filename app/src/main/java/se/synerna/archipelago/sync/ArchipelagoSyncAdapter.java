@@ -276,11 +276,11 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
 
         } catch (JSONException e) {
+            // Problem parsing the Json that is returned
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
 
-        // This will only happen if there was an error getting or parsing the forecast.
         return;
     }
 
@@ -331,8 +331,6 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
             locationId = ContentUris.parseId(insertedUri);
         }
-
-        // Wait, that worked?  Yes!
         return locationId;
     }
 
@@ -345,8 +343,14 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         String authority = context.getString(R.string.content_authority);
         ContentResolver.cancelSync(account, authority); // Start by removing existing ones
 
+        // As of now we schedule periodic syncs even when the user already has such syncs
+        // @todo: how to remove previously created sync requests first ?
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // we can enable inexact timers in our periodic sync
+
+            // @todo Check what the bundle is for. Put an empty one for now.
+
             SyncRequest request = new SyncRequest.Builder().
                     syncPeriodic(syncInterval, flexTime).
                     setExtras(new Bundle()).
