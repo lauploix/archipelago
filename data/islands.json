@@ -1,0 +1,26 @@
+// This file must be UTF-8 encoded
+{
+    "islands":[
+        {
+            "name": "Nynäshamn",
+            "long": 58.9124091,
+            "lat": 17.9467259
+        },
+        {
+            "name": "Sandhamn",
+            "long": 59.283333,
+            "lat": 18.916667
+        },
+        {
+            "name": "Ägnö",
+            "long": 59.2396304,
+            "lat": 18.4108346
+
+        },
+        {
+
+        }
+
+    ]
+
+}
