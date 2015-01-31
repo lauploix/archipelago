@@ -23,8 +23,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import se.synerna.archipelago.data.WeatherContract.LocationEntry;
-import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
+import se.synerna.archipelago.data.ArchipelagoContract.LocationEntry;
+import se.synerna.archipelago.data.ArchipelagoContract.WeatherEntry;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -53,16 +53,16 @@ public class WeatherProvider extends ContentProvider {
 
     private static final String sLocationSettingSelection =
             LocationEntry.TABLE_NAME+
-                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
+                    "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? ";
 
     private static final String sLocationSettingWithStartDateSelection =
             LocationEntry.TABLE_NAME+
-                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
+                    "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? AND " +
                     WeatherEntry.COLUMN_DATETEXT + " >= ? ";
 
     private static final String sLocationSettingAndDaySelection =
             LocationEntry.TABLE_NAME +
-                    "." + LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
+                    "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? AND " +
                     WeatherEntry.COLUMN_DATETEXT + " = ? ";
 
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
@@ -113,15 +113,15 @@ public class WeatherProvider extends ContentProvider {
         // found.  The code passed into the constructor represents the code to return for the root
         // URI.  It's common to use NO_MATCH as the code for this case.
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = WeatherContract.CONTENT_AUTHORITY;
+        final String authority = ArchipelagoContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER, WEATHER);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
 
-        matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
-        matcher.addURI(authority, WeatherContract.PATH_LOCATION + "/#", LOCATION_ID);
+        matcher.addURI(authority, ArchipelagoContract.PATH_LOCATION, LOCATION);
+        matcher.addURI(authority, ArchipelagoContract.PATH_LOCATION + "/#", LOCATION_ID);
 
         return matcher;
     }

@@ -16,15 +16,12 @@
 package se.synerna.archipelago;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
-import se.synerna.archipelago.data.WeatherContract;
+import se.synerna.archipelago.data.ArchipelagoContract;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public class Utility {
@@ -65,7 +62,7 @@ public class Utility {
     }
 
     static String formatDate(String dateString) {
-        Date date = WeatherContract.getDateFromDb(dateString);
+        Date date = ArchipelagoContract.getDateFromDb(dateString);
         return DateFormat.getDateInstance().format(date);
     }
 

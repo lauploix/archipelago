@@ -15,15 +15,13 @@
  */
 package se.synerna.archipelago.data;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 import android.util.Log;
 
-import se.synerna.archipelago.data.WeatherContract.LocationEntry;
-import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
+import se.synerna.archipelago.data.ArchipelagoContract.LocationEntry;
+import se.synerna.archipelago.data.ArchipelagoContract.WeatherEntry;
 
 /**
  * Manages a local database for weather data.
@@ -31,7 +29,7 @@ import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 12;
 
     public static final String DATABASE_NAME = "archipelago.db";
     public static final String LOG_TAG = WeatherDbHelper.class.getSimpleName();
@@ -47,10 +45,10 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         // location setting, the city name, and the latitude and longitude
         final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
                 LocationEntry._ID + " INTEGER PRIMARY KEY," +
-                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
+                LocationEntry.COLUMN_LOCATION_NAME + " TEXT UNIQUE NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL, " +
-                "UNIQUE (" + LocationEntry.COLUMN_LOCATION_SETTING +") ON CONFLICT IGNORE"+
+                "UNIQUE (" + LocationEntry.COLUMN_LOCATION_NAME +") ON CONFLICT IGNORE"+
                 " );";
 
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +

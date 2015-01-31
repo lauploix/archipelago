@@ -26,7 +26,7 @@ import java.util.Date;
 /**
  * Defines table and column names for the archipelago database.
  */
-public class WeatherContract {
+public class ArchipelagoContract {
 
     public static final String CONTENT_AUTHORITY = "se.synerna.archipelago";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
@@ -79,12 +79,9 @@ public class WeatherContract {
         // Table name
         public static final String TABLE_NAME = "location";
 
-        // The location setting string is what will be sent to openweathermap
-        // as the location query.
-        public static final String COLUMN_LOCATION_SETTING = "location_setting";
+        public static final String COLUMN_LOCATION_NAME = "location_name";
 
-        // In order to uniquely pinpoint the location on the map when we launch the
-        // map intent, we store the latitude and longitude as returned by openweathermap.
+        // This is what we use to query
         public static final String COLUMN_COORD_LAT = "coord_lat";
         public static final String COLUMN_COORD_LONG = "coord_long";
 

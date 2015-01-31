@@ -26,9 +26,9 @@ import android.util.Log;
 //import se.synerna.archipelago.MainActivity;
 import se.synerna.archipelago.R;
 import se.synerna.archipelago.Utility;
-import se.synerna.archipelago.data.WeatherContract;
-import se.synerna.archipelago.data.WeatherContract.WeatherEntry;
-import se.synerna.archipelago.data.WeatherContract.LocationEntry;
+import se.synerna.archipelago.data.ArchipelagoContract;
+import se.synerna.archipelago.data.ArchipelagoContract.WeatherEntry;
+import se.synerna.archipelago.data.ArchipelagoContract.LocationEntry;
 
 
 import org.json.JSONArray;
@@ -67,7 +67,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
     }
 
-    public void syncIslandsLocations(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    private void syncIslandsLocations(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -106,7 +106,7 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             islandsStr = buffer.toString();
 
-            Log.v(LOG_TAG, islandsStr); // Found this json string
+            // Log.v(LOG_TAG, islandsStr); // Found this json string
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
@@ -128,21 +128,31 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         // Here the json containing the islands is available.
         // The same would have costs approx 5 loc in python... just me saying.
+
+        long[] locationIds = null;
+        double[] latitudes = null;
+        double[] longitudes = null;
+
         try {
-            final String ISLANDS = "islands";
-            final String NAME = "name";
-            final String LONG = "long";
-            final String LAT = "lat";
+            final String JSON_ISLANDS = "islands";
+            final String JSON_NAME = "name";
+            final String JSON_LONG = "long";
+            final String JSON_LAT = "lat";
 
             JSONObject islandJson = new JSONObject(islandsStr);
-            JSONArray islandsArray = islandJson.getJSONArray(ISLANDS);
+            JSONArray islandsArray = islandJson.getJSONArray(JSON_ISLANDS);
+
+            locationIds = new long[islandsArray.length()];
+            latitudes = new double[islandsArray.length()];
+            longitudes = new double[islandsArray.length()];
 
             for (int i = 0; i < islandsArray.length(); i++) {
                 JSONObject island = islandsArray.getJSONObject(i);
-                String name = island.getString(NAME);
-                double longi = island.getDouble(LONG);
-                double lati = island.getDouble(LAT);
-                Log.v(LOG_TAG, "Found island "+ name + " at " + longi + " / " + lati);
+                String name = island.getString(JSON_NAME);
+                double longi = island.getDouble(JSON_LONG);
+                double lati = island.getDouble(JSON_LAT);
+
+                locationIds[i] = addLocation(name, lati, longi);
             }
 
         } catch (JSONException e) {
@@ -150,23 +160,24 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
+
+        // as values, we have ids, longitudes, latitudes in 3 arrays to use to fetch weather from there
+
+        // URL for current weather by coordinates : "http://api.openweathermap.org/data/2.5/weather?lat=35&lon=139"
+
+        for (int i = 0; i < locationIds.length; i++) {
+            updateCurrentWeatherFromApi(locationIds[i], latitudes[i], longitudes[i]);
+        }
     }
 
-    @Override
-    public void onPerformSync(Account account, Bundle extras, String
-            authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "Starting sync");
+    /**
+     * @param locationId id in the database.
+     * @param latitude   the latitude of the place
+     * @param longitude  the longitude of the place
+     * @return nothing
+     */
+    private void updateCurrentWeatherFromApi(Long locationId, Double latitude, double longitude) {
 
-        syncIslandsLocations(account, extras, authority, provider, syncResult);
-
-        // Now doing a sync to get the islands
-        // For now we do that often but we should not, for now
-
-        // Getting the zipcode to send to the API
-        String locationQuery = Utility.getPreferredLocation(getContext());
-
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -181,17 +192,17 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             // Construct the URL for the OpenWeatherMap query
             // http://openweathermap.org/API#forecast
             final String FORECAST_BASE_URL =
-                    "http://api.openweathermap.org/data/2.5/forecast/daily?";
-            final String QUERY_PARAM = "q";
+                    "http://api.openweathermap.org/data/2.5/weather?";
+            final String LAT_PARAM = "lat";
+            final String LONG_PARAM = "lon";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
-            final String DAYS_PARAM = "cnt";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, locationQuery)
-                    .appendQueryParameter(FORMAT_PARAM, format)
-                    .appendQueryParameter(UNITS_PARAM, units)
-                    .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                    .appendQueryParameter(LAT_PARAM, Double.toString(latitude))
+                    .appendQueryParameter(LONG_PARAM, Double.toString(longitude))
+                    .appendQueryParameter(FORMAT_PARAM, format) // json
+                    .appendQueryParameter(UNITS_PARAM, units) // metric
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -244,124 +255,34 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
-        // Now we have a String representing the complete forecast in JSON Format.
-        // Fortunately parsing is easy:  constructor takes the JSON string and converts it
-        // into an Object hierarchy for us.
-
-        // These are the names of the JSON objects that need to be extracted.
-
-        // Location information
-        final String OWM_CITY = "city";
-        final String OWM_COORD = "coord";
-
-        // Location coordinate
-        final String OWM_LATITUDE = "lat";
-        final String OWM_LONGITUDE = "lon";
-
-        // Weather information.  Each day's forecast info is an element of the "list" array.
-        final String OWM_LIST = "list";
-
-        final String OWM_DATETIME = "dt";
-        final String OWM_PRESSURE = "pressure";
-        final String OWM_HUMIDITY = "humidity";
-        final String OWM_WINDSPEED = "speed";
-        final String OWM_WIND_DIRECTION = "deg";
-
-        // All temperatures are children of the "temp" object.
-        final String OWM_TEMPERATURE = "temp";
-        final String OWM_MAX = "max";
-        final String OWM_MIN = "min";
-
-        final String OWM_WEATHER = "weather";
-        final String OWM_DESCRIPTION = "main";
-        final String OWM_WEATHER_ID = "id";
+        final String JSON_WIND = "wind";
+        final String JSON_WINDSPEED = "speed";
+        final String JSON_WIND_DIRECTION = "deg";
 
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
-            JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+            JSONObject windJson = forecastJson.getJSONObject(JSON_WIND);
 
-            JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
+            double windSpeed;
+            double windDirection;
 
-            JSONObject cityCoord = cityJson.getJSONObject(OWM_COORD);
-            double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
-            double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
+            windSpeed = windJson.getDouble(JSON_WINDSPEED);
+            windDirection = windJson.getDouble(JSON_WIND_DIRECTION);
 
-            long locationId = addLocation(locationQuery, cityLatitude, cityLongitude);
+            ContentValues weatherValues = new ContentValues();
 
-            // Insert the new weather information into the database
-            Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
+            weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationId);
+            weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, windSpeed);
+            weatherValues.put(WeatherEntry.COLUMN_DEGREES, windDirection);
 
-            for (int i = 0; i < weatherArray.length(); i++) {
-                // These are the values that will be collected.
+            getContext().getContentResolver().insert(WeatherEntry.CONTENT_URI, weatherValues);
 
-                long dateTime;
-                double pressure;
-                int humidity;
-                double windSpeed;
-                double windDirection;
-
-                double high;
-                double low;
-
-                String description;
-                int weatherId;
-
-                // Get the JSON object representing the day
-                JSONObject dayForecast = weatherArray.getJSONObject(i);
-
-                // The date/time is returned as a long.  We need to convert that
-                // into something human-readable, since most people won't read "1400356800" as
-                // "this saturday".
-                dateTime = dayForecast.getLong(OWM_DATETIME);
-
-                pressure = dayForecast.getDouble(OWM_PRESSURE);
-                humidity = dayForecast.getInt(OWM_HUMIDITY);
-                windSpeed = dayForecast.getDouble(OWM_WINDSPEED);
-                windDirection = dayForecast.getDouble(OWM_WIND_DIRECTION);
-
-                // Description is in a child array called "weather", which is 1 element long.
-                // That element also contains a weather code.
-                JSONObject weatherObject =
-                        dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
-                description = weatherObject.getString(OWM_DESCRIPTION);
-                weatherId = weatherObject.getInt(OWM_WEATHER_ID);
-
-                // Temperatures are in a child object called "temp".  Try not to name variables
-                // "temp" when working with temperature.  It confuses everybody.
-                JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
-                high = temperatureObject.getDouble(OWM_MAX);
-                low = temperatureObject.getDouble(OWM_MIN);
-
-                ContentValues weatherValues = new ContentValues();
-
-                weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationId);
-                weatherValues.put(WeatherEntry.COLUMN_DATETEXT, WeatherContract.getDbDateString(new Date(dateTime * 1000L)));
-                weatherValues.put(WeatherEntry.COLUMN_HUMIDITY, humidity);
-                weatherValues.put(WeatherEntry.COLUMN_PRESSURE, pressure);
-                weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, windSpeed);
-                weatherValues.put(WeatherEntry.COLUMN_DEGREES, windDirection);
-                weatherValues.put(WeatherEntry.COLUMN_MAX_TEMP, high);
-                weatherValues.put(WeatherEntry.COLUMN_MIN_TEMP, low);
-                weatherValues.put(WeatherEntry.COLUMN_SHORT_DESC, description);
-                weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, weatherId);
-
-                cVVector.add(weatherValues);
-            }
-            if (cVVector.size() > 0) {
-                ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
-
-                Calendar cal = Calendar.getInstance(); //Get's a calendar object with the current time.
-                cal.add(Calendar.DATE, -1); //Signifies yesterday's date
-                String yesterdayDate = WeatherContract.getDbDateString(cal.getTime());
-                getContext().getContentResolver().delete(WeatherEntry.CONTENT_URI,
-                        WeatherEntry.COLUMN_DATETEXT + " <= ?",
-                        new String[]{yesterdayDate});
-
-                //notifyWeather();
-            }
-            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
+            Calendar cal = Calendar.getInstance(); //Get's a calendar object with the current time.
+            cal.add(Calendar.DATE, -1); //Signifies yesterday's date
+            String yesterdayDate = ArchipelagoContract.getDbDateString(cal.getTime());
+            getContext().getContentResolver().delete(WeatherEntry.CONTENT_URI,
+                    WeatherEntry.COLUMN_DATETEXT + " <= ?",
+                    new String[]{yesterdayDate});
 
         } catch (JSONException e) {
             // Problem parsing the Json that is returned
@@ -370,6 +291,16 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         return;
+
+    }
+
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String
+            authority, ContentProviderClient provider, SyncResult syncResult) {
+        Log.d(LOG_TAG, "Starting sync");
+
+        syncIslandsLocations(account, extras, authority, provider, syncResult);
+
     }
 
 
@@ -389,9 +320,9 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
         // First, check if the location with this city name exists in the db
         Cursor locationCursor = getContext().getContentResolver().query(
-                WeatherContract.LocationEntry.CONTENT_URI,
+                ArchipelagoContract.LocationEntry.CONTENT_URI,
                 new String[]{LocationEntry._ID},
-                LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
+                LocationEntry.COLUMN_LOCATION_NAME + " = ?",
                 new String[]{locationSetting},
                 null);
 
@@ -405,19 +336,20 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
             // Then add the data, along with the corresponding name of the data type,
             // so the content provider knows what kind of value is being inserted.
-            locationValues.put(LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(LocationEntry.COLUMN_LOCATION_NAME, locationSetting);
             locationValues.put(LocationEntry.COLUMN_COORD_LAT, lat);
             locationValues.put(LocationEntry.COLUMN_COORD_LONG, lon);
 
             // Finally, insert location data into the database.
             Uri insertedUri = getContext().getContentResolver().insert(
-                    WeatherContract.LocationEntry.CONTENT_URI,
+                    ArchipelagoContract.LocationEntry.CONTENT_URI,
                     locationValues
             );
 
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
             locationId = ContentUris.parseId(insertedUri);
         }
+        locationCursor.close();
         return locationId;
     }
 
