@@ -43,19 +43,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = ArchipelagoSyncAdapter.class.getSimpleName();
     public static final int SYNC_INTERVAL = 10; //60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
-
-    private static final String[] NOTIFY_WEATHER_PROJECTION = new String[]{
-            WeatherEntry.COLUMN_WEATHER_ID,
-            WeatherEntry.COLUMN_MAX_TEMP,
-            WeatherEntry.COLUMN_MIN_TEMP,
-            WeatherEntry.COLUMN_SHORT_DESC
-    };
 
     // these indices must match the projection
     private static final int INDEX_WEATHER_ID = 0;
@@ -186,7 +180,6 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
 
         String format = "json";
         String units = "metric";
-        int numDays = 14;
 
         try {
             // Construct the URL for the OpenWeatherMap query
@@ -256,33 +249,35 @@ public class ArchipelagoSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         final String JSON_WIND = "wind";
+        final String JSON_DATE = "dt";
         final String JSON_WINDSPEED = "speed";
         final String JSON_WIND_DIRECTION = "deg";
 
         try {
+            Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONObject windJson = forecastJson.getJSONObject(JSON_WIND);
 
             double windSpeed;
             double windDirection;
+            long dateTime;
 
             windSpeed = windJson.getDouble(JSON_WINDSPEED);
             windDirection = windJson.getDouble(JSON_WIND_DIRECTION);
+            dateTime = forecastJson.getLong(JSON_DATE);
+            calendar.setTime(new Date(dateTime * 1000L));   // assigns calendar to given date
+
+            int dateHour = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format;
 
             ContentValues weatherValues = new ContentValues();
 
             weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationId);
             weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, windSpeed);
             weatherValues.put(WeatherEntry.COLUMN_DEGREES, windDirection);
+            weatherValues.put(WeatherEntry.COLUMN_HOUR, dateHour);
 
             getContext().getContentResolver().insert(WeatherEntry.CONTENT_URI, weatherValues);
-
-            Calendar cal = Calendar.getInstance(); //Get's a calendar object with the current time.
-            cal.add(Calendar.DATE, -1); //Signifies yesterday's date
-            String yesterdayDate = ArchipelagoContract.getDbDateString(cal.getTime());
-            getContext().getContentResolver().delete(WeatherEntry.CONTENT_URI,
-                    WeatherEntry.COLUMN_DATETEXT + " <= ?",
-                    new String[]{yesterdayDate});
 
         } catch (JSONException e) {
             // Problem parsing the Json that is returned

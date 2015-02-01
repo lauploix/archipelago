@@ -61,11 +61,6 @@ public class Utility {
         */
     }
 
-    static String formatDate(String dateString) {
-        Date date = ArchipelagoContract.getDateFromDb(dateString);
-        return DateFormat.getDateInstance().format(date);
-    }
-
     // Format used for storing dates in the database.  ALso used for converting those strings
     // back into date objects for comparison/processing.
     public static final String DATE_FORMAT = "yyyyMMdd";

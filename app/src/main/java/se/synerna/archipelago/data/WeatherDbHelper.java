@@ -29,7 +29,7 @@ import se.synerna.archipelago.data.ArchipelagoContract.WeatherEntry;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 14;
 
     public static final String DATABASE_NAME = "archipelago.db";
     public static final String LOG_TAG = WeatherDbHelper.class.getSimpleName();
@@ -41,46 +41,25 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        // Create a table to hold locations.  A location consists of the string supplied in the
-        // location setting, the city name, and the latitude and longitude
         final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
                 LocationEntry._ID + " INTEGER PRIMARY KEY," +
                 LocationEntry.COLUMN_LOCATION_NAME + " TEXT UNIQUE NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL, " +
-                "UNIQUE (" + LocationEntry.COLUMN_LOCATION_NAME +") ON CONFLICT IGNORE"+
+                // No real reason to replace, but just in case we want to update the location
+                "UNIQUE (" + LocationEntry.COLUMN_LOCATION_NAME +") ON CONFLICT REPLACE"+
                 " );";
 
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +
-                // Why AutoIncrement here, and not above?
-                // Unique keys will be auto-generated in either case.  But for weather
-                // forecasting, it's reasonable to assume the user will want information
-                // for a certain date and all dates *following*, so the forecast data
-                // should be sorted accordingly.
                 WeatherEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-
-                // the ID of the location entry associated with this weather data
                 WeatherEntry.COLUMN_LOC_KEY + " INTEGER NOT NULL, " +
-                WeatherEntry.COLUMN_DATETEXT + " TEXT NOT NULL, " +
-                WeatherEntry.COLUMN_SHORT_DESC + " TEXT NOT NULL, " +
-                WeatherEntry.COLUMN_WEATHER_ID + " INTEGER NOT NULL," +
-
-                WeatherEntry.COLUMN_MIN_TEMP + " REAL NOT NULL, " +
-                WeatherEntry.COLUMN_MAX_TEMP + " REAL NOT NULL, " +
-
-                WeatherEntry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
-                WeatherEntry.COLUMN_PRESSURE + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_WIND_SPEED + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL, " +
-
+                WeatherEntry.COLUMN_HOUR + " INTEGER NOT NULL, " +
+                "UNIQUE (" + WeatherEntry.COLUMN_HOUR +") ON CONFLICT REPLACE"+
                 // Set up the location column as a foreign key to location table.
                 " FOREIGN KEY (" + WeatherEntry.COLUMN_LOC_KEY + ") REFERENCES " +
-                LocationEntry.TABLE_NAME + " (" + LocationEntry._ID + "), " +
-
-                // To assure the application have just one weather entry per day
-                // per location, it's created a UNIQUE constraint with REPLACE strategy
-                " UNIQUE (" + WeatherEntry.COLUMN_DATETEXT + ", " +
-                WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
+                LocationEntry.TABLE_NAME + " (" + LocationEntry._ID + "));";
 
         sqLiteDatabase.execSQL(SQL_CREATE_LOCATION_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);

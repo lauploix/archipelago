@@ -55,6 +55,7 @@ public class WeatherProvider extends ContentProvider {
             LocationEntry.TABLE_NAME+
                     "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? ";
 
+    /*
     private static final String sLocationSettingWithStartDateSelection =
             LocationEntry.TABLE_NAME+
                     "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? AND " +
@@ -65,19 +66,20 @@ public class WeatherProvider extends ContentProvider {
                     "." + LocationEntry.COLUMN_LOCATION_NAME + " = ? AND " +
                     WeatherEntry.COLUMN_DATETEXT + " = ? ";
 
+*/
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = WeatherEntry.getLocationSettingFromUri(uri);
-        String startDate = WeatherEntry.getStartDateFromUri(uri);
+        String locationSetting = WeatherEntry.getLocationNameFromUri(uri);
+        String startDate = null; //b WeatherEntry.getStartDateFromUri(uri);
 
-        String[] selectionArgs;
-        String selection;
+        String[] selectionArgs=null;
+        String selection=null;
 
         if (startDate == null) {
             selection = sLocationSettingSelection;
             selectionArgs = new String[]{locationSetting};
         } else {
-            selectionArgs = new String[]{locationSetting, startDate};
-            selection = sLocationSettingWithStartDateSelection;
+            // selectionArgs = new String[]{locationSetting, startDate};
+            // selection = sLocationSettingWithStartDateSelection;
         }
 
         return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -90,9 +92,10 @@ public class WeatherProvider extends ContentProvider {
         );
     }
 
+/*
     private Cursor getWeatherByLocationSettingAndDate(
             Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = WeatherEntry.getLocationSettingFromUri(uri);
+        String locationSetting = WeatherEntry.getLocationNameFromUri(uri);
         String date = WeatherEntry.getDateFromUri(uri);
 
         return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -104,6 +107,7 @@ public class WeatherProvider extends ContentProvider {
                 sortOrder
         );
     }
+    */
 
     private static UriMatcher buildUriMatcher() {
         // I know what you're thinking.  Why create a UriMatcher when you can use regular
@@ -116,9 +120,9 @@ public class WeatherProvider extends ContentProvider {
         final String authority = ArchipelagoContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER, WEATHER);
-        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
-        matcher.addURI(authority, ArchipelagoContract.PATH_WEATHER + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WIND, WEATHER);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WIND + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(authority, ArchipelagoContract.PATH_WIND + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
 
         matcher.addURI(authority, ArchipelagoContract.PATH_LOCATION, LOCATION);
         matcher.addURI(authority, ArchipelagoContract.PATH_LOCATION + "/#", LOCATION_ID);
@@ -140,11 +144,11 @@ public class WeatherProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             // "weather/*/*"
-            case WEATHER_WITH_LOCATION_AND_DATE:
-            {
-                retCursor = getWeatherByLocationSettingAndDate(uri, projection, sortOrder);
-                break;
-            }
+            //case WEATHER_WITH_LOCATION_AND_DATE:
+            //{
+            //    retCursor = getWeatherByLocationSettingAndDate(uri, projection, sortOrder);
+            //    break;
+            //}
             // "weather/*"
             case WEATHER_WITH_LOCATION: {
                 retCursor = getWeatherByLocationSetting(uri, projection, sortOrder);
